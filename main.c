@@ -4,7 +4,7 @@
 #define MAX_INPUT 1024
 int main() {
   char input[MAX_INPUT];
-
+  char *args[MAX_ARGS]
   while (1) {
     printf("smolshell> ");
     fflush(stdout);
@@ -18,7 +18,13 @@ int main() {
     if (strcmp(input, "exit") == 0) {
       break;
     }
-    printf("You typed: %s\n", input);
+    int i = 0;
+    char *token = strtok(input, " ");
+    while (token != NULL && i < MAX_ARGS -1) {
+      args[i++] = token;
+      token = strtok(NULL, " ");
+    }
+
   }
   printf("Exiting the shell...\n");
   return 0;
