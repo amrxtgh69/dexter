@@ -1,7 +1,23 @@
 #include <stdio.h>
+#include <string.h>
 
-int main(int argc, char* argv[]){
+#define MAX_INPUT 1024
 
-	printf("Hello World!");
-	return 0;
+int main() {
+  char input[MAX_INPUT];
+  while (1) {
+    printf("dexter>  ");
+    fflush(stdout);
+    if (fgets(input, MAX_INPUT,  stdin) == NULL) {
+      printf("\n");
+      break;
+    }
+    input[strcspn(input, "\n")] = 0;
+
+    if (strcmp(input, "exit") == 0) {
+      break;
+    }
+    printf("you typed %s\n", input);
+  }
+  printf("Exiting the shell\n");
 }
