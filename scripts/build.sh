@@ -1,11 +1,21 @@
-# this file will containe all the build scripts
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color (reset)
 
-cmake_minimum_required(VERSION 3.10)
+echo ""
 
-project(smol-shell LANGUAGES C CXX)
+rm -rf build
 
-set(CMAKE_CXX_STANDARD 14)
+mkdir -p build
+cd build
 
-include_directories(include)
+echo -e "${GREEN}***Generating build files***${NC}"
+cmake ..
+echo ""
 
-add_executable(my_program src/main.c)
+echo -e "${GREEN}***Building the project***${NC}"
+cmake --build .
+echo ""
+
+echo -e "${GREEN}***Installing the project***${NC}"
+cmake --install . --prefix ../dist
+echo ""
