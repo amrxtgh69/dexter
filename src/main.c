@@ -22,6 +22,30 @@ void built_ls(char *path) {
   closedir(dir);
   printf("\n");
 }
+
+void parse_and_execute(char *input) {
+  char *args[MAX_ARGS];
+  int argc = 0;
+  //tokenize the input
+  char *token = strtok(input, " ");
+  while (token != NULL && argc < MAX_ARGS - 1) {
+    args[argc++] = token;
+    token = strtok(NULL, " ");
+    }
+  args[argc] = NULL;
+  if (argc == 0) {
+    return;
+  }
+    //command execution
+  if (strcmp(args[0], "ls") == 0) {
+    if (argc > 1) {
+      built_ls(args[1]);
+    } else {
+    built_ls(NULL);
+    }
+  }
+}
+
 int main() {
   char input[MAX_INPUT_SIZE];
   while (1) {
@@ -36,25 +60,8 @@ int main() {
     if (strcmp(input, "exit") == 0) {
       break;
     }
-    char *args[MAX_ARGS];
-    int argc = 0;
-    char *token = strtok(input, " ");
-    while (token != NULL && argc < MAX_ARGS -1) {
-      args[argc++] = token;
-      token = strtok(NULL, " ");
-    }
-    args[argc] = NULL;
-
-    if (argc == 0) {
-    continue;
-    }
-    if (strcmp(args[0], "ls") == 0) {
-      if (argc > 1) {
-        built_ls(args[1]);
-      }
-      else 
-        built_ls(NULL);
-    }
+    parse_and_execute(input);
   }
   printf("Exiting the shell\n");
 }
+
