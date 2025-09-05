@@ -27,8 +27,17 @@ void built_ls(char *path) {
 
 void builtin_cd(char *path) {
   if (path == NULL) {
+    //if no path then go to home
     path = getenv("HOME");
+    if (path == NULL) {
+      fprintf(stderr, "cd:Home environment variable not set\n");
+      return;
+    }
   }
+  if (strcmp(path, ".") == 0) {
+    return;
+  }
+
   if (chdir(path) != 0) {
     perror("cd");
   }
@@ -53,7 +62,7 @@ void parse_and_execute(char *input) {
       built_ls(args[1]);
     } else built_ls(NULL);
   }
-  else if (strcmp(args[0], "cd")) {
+  else if (strcmp(args[0], "cd") == 0) {
     if (argc > 1) builtin_cd(args[1]);
     else builtin_cd(NULL);
   }
@@ -61,9 +70,14 @@ void parse_and_execute(char *input) {
 
 int main() {
   char input[MAX_INPUT_SIZE];
+  char cwd[1024];
   while (1) {
-    printf("dexter> ");
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+      printf("dexter:%s>", cwd);
+      fflush(stdout);
+    } else printf("dexter> ");
     fflush(stdout);
+
     if (fgets(input, MAX_INPUT_SIZE,  stdin) == NULL) {
       printf("\n");
       break;
