@@ -43,6 +43,39 @@ void builtin_cd(char *path) {
   }
 }
 
+void builtin_pwd() {
+  char cwd[1024];
+  if (getcwd(cwd, sizeof(cwd)) != NULL) {
+    printf("%s\n", cwd);
+  }else {
+    perror("pwd");
+  }
+}
+
+void builtin_clear() {
+  //ANSI escape code to clear the screen
+  printf("\033[H\033[J");
+  fflush(stdout);
+}
+
+void builtin_cat(char *filename) {
+  if (filename == NULL) {
+    fprintf(stderr, "cat: missing file operand\n");
+    return;
+  }
+  FILE *file = fopen(filename, "r"); 
+    if (file == NULL) {
+      perror("cat");
+      return; 
+    }
+
+    char ch;
+    while ((ch = fgetc(file)) != EOF) {
+      putchar(ch);
+    }
+  fclose(file);
+}
+
 void parse_and_execute(char *input) {
   char *args[MAX_ARGS];
   int argc = 0;
@@ -65,6 +98,18 @@ void parse_and_execute(char *input) {
   else if (strcmp(args[0], "cd") == 0) {
     if (argc > 1) builtin_cd(args[1]);
     else builtin_cd(NULL);
+  }
+  else if (strcmp(args[0], "pwd") == 0) {
+    builtin_pwd();
+  }
+  else if (strcmp(args[0], "clear") == 0) {
+    builtin_clear();
+  }
+  else if (strcmp(args[0], "cat") == 0) {
+    if (argc > 1) {
+      builtin_cat(args[1]);
+    }
+    else builtin_cat(NULL);
   }
 }
 
