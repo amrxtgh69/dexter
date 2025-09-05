@@ -88,7 +88,18 @@ void builtin_mkdir(char *dirname) {
   }
 }
 
-
+void builtin_touch(char *filename) {
+  if (filename == NULL) {
+    fprintf(stderr, "touch: missing file operand\n");
+    return;
+  }
+  FILE *file = fopen(filename, "a");
+    if (file == NULL) {
+      perror("touch");
+      return;
+    }
+  fclose(file);
+}
 
 void parse_and_execute(char *input) {
   char *args[MAX_ARGS];
@@ -128,6 +139,10 @@ void parse_and_execute(char *input) {
   else if (strcmp(args[0], "mkdir") == 0) {
     if (argc > 1) builtin_mkdir(args[1]);
     else builtin_mkdir(NULL);
+  }
+  else if (strcmp(args[0], "touch") == 0) {
+    if (argc > 1) builtin_touch(args[1]);
+    else builtin_touch(NULL);
   }
 }
 
