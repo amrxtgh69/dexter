@@ -3,6 +3,8 @@
 #include <string.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <sys/stat.h>
+
 
 #define MAX_INPUT_SIZE 1024
 #define MAX_ARGS 64
@@ -76,6 +78,18 @@ void builtin_cat(char *filename) {
   fclose(file);
 }
 
+void builtin_mkdir(char *dirname) {
+  if (dirname == NULL) {
+    fprintf(stderr, "mkdir: missing directory name\n");
+    return;
+  }
+  if (mkdir(dirname, 0755) != 0) {
+    perror("mkdir");
+  }
+}
+
+
+
 void parse_and_execute(char *input) {
   char *args[MAX_ARGS];
   int argc = 0;
@@ -110,6 +124,10 @@ void parse_and_execute(char *input) {
       builtin_cat(args[1]);
     }
     else builtin_cat(NULL);
+  }
+  else if (strcmp(args[0], "mkdir") == 0) {
+    if (argc > 1) builtin_mkdir(args[1]);
+    else builtin_mkdir(NULL);
   }
 }
 
