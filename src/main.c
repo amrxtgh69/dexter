@@ -51,9 +51,11 @@ void parse_and_execute(char *input) {
   if (strcmp(args[0], "ls") == 0) {
     if (argc > 1) {
       built_ls(args[1]);
-    } else {
-    built_ls(NULL);
-    }
+    } else built_ls(NULL);
+  }
+  else if (strcmp(args[0], "cd")) {
+    if (argc > 1) builtin_cd(args[1]);
+    else builtin_cd(NULL);
   }
 }
 
