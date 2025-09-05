@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <unistd.h>
 
 #define MAX_INPUT_SIZE 1024
 #define MAX_ARGS 64
@@ -19,8 +21,17 @@ void built_ls(char *path) {
       printf("%s  ", entry->d_name);
     }
  }
-  closedir(dir);
   printf("\n");
+  closedir(dir);
+}
+
+void builtin_cd(char *path) {
+  if (path == NULL) {
+    path = getenv("HOME");
+  }
+  if (chdir(path) != 0) {
+    perror("cd");
+  }
 }
 
 void parse_and_execute(char *input) {
@@ -49,7 +60,7 @@ void parse_and_execute(char *input) {
 int main() {
   char input[MAX_INPUT_SIZE];
   while (1) {
-    printf("dexter>  ");
+    printf("dexter> ");
     fflush(stdout);
     if (fgets(input, MAX_INPUT_SIZE,  stdin) == NULL) {
       printf("\n");
