@@ -9,6 +9,98 @@
 #define MAX_INPUT_SIZE 1024
 #define MAX_ARGS 64
 
+//function declaration
+void print_prompt(void);
+int parse_input(char *input, char *args[]);
+void execute_command(int argc, char *args[]);
+void built_ls(char *path);
+void builtin_cd(char *path);
+void builtin_clear(void);
+void builtin_pwd(void);
+void builtin_cat(char *filename);
+void builtin_mkdir(char *dirname);
+void builtin_touch(int argc, char *args[]);
+
+int main() {
+  char input[MAX_INPUT_SIZE];
+  char *args[MAX_ARGS];
+  int argc;
+
+  while (1) {
+    print_prompt();
+    if (fgets(input, MAX_INPUT_SIZE, stdin) == NULL) {
+      printf("\n");
+      break;
+    }
+    input[strcspn(input, "\n")] = 0;
+    if (strcmp(input, "exit") == 0) {
+      break;
+    }
+    argc = parse_input(input, args);
+    execute_command(argc, args);
+  }
+  printf("Exiting the shell..\n");
+}
+
+
+void print_prompt() {
+  char cwd[1024];
+  if (getcwd(cwd, sizeof(cwd)) != NULL) {
+    printf("dexter:%s> ", cwd);
+  } else {
+    printf("dexter> ");
+  }
+  fflush(stdout);
+}
+
+int parse_input(char *input, char *args[]) {
+  int argc = 0;
+  //tokenize the input
+  char *token = strtok(input, " ");
+  while (token != NULL && argc < MAX_ARGS - 1) {
+    args[argc++] = token;
+    token = strtok(NULL, " ");
+    }
+  args[argc] = NULL;
+    return argc;
+  }
+
+void execute_command(int argc, char *args[]){
+  if (argc == 0) {
+    return;
+  }
+  if (strcmp(args[0], "ls") == 0){
+    built_ls(argc > 1 ? args[1] : NULL);
+  }
+  else if (strcmp(args[0], "cd") == 0) {
+    builtin_cd(argc > 1 ? args[1] : NULL);
+  }
+  else if (strcmp(args[0], "cat") == 0) {
+    builtin_cat(argc > 1 ? args[1] : NULL);
+  }
+  else if (strcmp(args[0], "clear") == 0) {
+    builtin_clear();
+  }
+  else if (strcmp(args[0], "pwd") == 0) {
+    builtin_pwd();
+  }
+  else if (strcmp(args[0], "mkdir") == 0) {
+    builtin_mkdir(argc > 1 ? args[1] : NULL);
+  }
+  else if (strcmp(args[0], "touch") == 0) {
+    if (argc > 1) {
+      builtin_touch(argc, args);
+    } else {
+      fprintf(stderr, "touch: missing file operand\n");
+    }
+  }
+  else {
+    fprintf(stderr, "Command not found: %s\n", args[0]);
+  }
+}
+
+
+
 void built_ls(char *path) {
   DIR *dir;
   struct dirent *entry;
@@ -97,72 +189,4 @@ void builtin_touch(int argc, char *args[]) {
   }
 }
 
-void parse_and_execute(char *input) {
-  char *args[MAX_ARGS];
-  int argc = 0;
-  //tokenize the input
-  char *token = strtok(input, " ");
-  while (token != NULL && argc < MAX_ARGS - 1) {
-    args[argc++] = token;
-    token = strtok(NULL, " ");
-    }
-  args[argc] = NULL;
-  if (argc == 0) {
-    return;
-  }
-    //command execution
-  if (strcmp(args[0], "ls") == 0) {
-    if (argc > 1) {
-      built_ls(args[1]);
-    } else built_ls(NULL);
-  }
-  else if (strcmp(args[0], "cd") == 0) {
-    if (argc > 1) builtin_cd(args[1]);
-    else builtin_cd(NULL);
-  }
-  else if (strcmp(args[0], "pwd") == 0) {
-    builtin_pwd();
-  }
-  else if (strcmp(args[0], "clear") == 0) {
-    builtin_clear();
-  }
-  else if (strcmp(args[0], "cat") == 0) {
-    if (argc > 1) {
-      builtin_cat(args[1]);
-    }
-    else builtin_cat(NULL);
-  }
-  else if (strcmp(args[0], "mkdir") == 0) {
-    if (argc > 1) builtin_mkdir(args[1]);
-    else builtin_mkdir(NULL);
-  }
-  else if (strcmp(args[0], "touch") == 0) {
-    if (argc > 1) builtin_touch(argc, args);
-    else fprintf(stderr, "touch: missing file operation\n");
-  }
-}
-
-int main() {
-  char input[MAX_INPUT_SIZE];
-  char cwd[1024];
-  while (1) {
-    if (getcwd(cwd, sizeof(cwd)) != NULL) {
-      printf("dexter:%s>", cwd);
-      fflush(stdout);
-    } else printf("dexter> ");
-    fflush(stdout);
-
-    if (fgets(input, MAX_INPUT_SIZE,  stdin) == NULL) {
-      printf("\n");
-      break;
-    }
-    input[strcspn(input, "\n")] = 0;
-
-    if (strcmp(input, "exit") == 0) {
-      break;
-    }
-    parse_and_execute(input);
-  }
-  printf("Exiting the shell\n");
-}
 
