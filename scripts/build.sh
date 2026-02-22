@@ -1,7 +1,7 @@
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color (reset)
 
-echo "building the thing"
+echo "building the dexter shell"
 
 rm -rf build
 
